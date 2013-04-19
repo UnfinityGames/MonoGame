@@ -376,7 +376,10 @@ namespace Microsoft.Xna.Framework.Media
 					State = MediaState.Stopped;
 
 					// FIXME: Is it really just null, null?
-					ActiveSongChanged.Invoke(null, null);
+					if (ActiveSongChanged != null)
+					{
+					    ActiveSongChanged.Invoke(null, null);
+					}
 
 					return;
 				}
@@ -442,7 +445,10 @@ namespace Microsoft.Xna.Framework.Media
                 Play(nextSong);                            
             
             // FIXME: Is it really just null, null?
-            ActiveSongChanged.Invoke(null, null);
+            if (ActiveSongChanged != null)
+            {
+                ActiveSongChanged.Invoke(null, null);
+            }
 		}
     }
 }
