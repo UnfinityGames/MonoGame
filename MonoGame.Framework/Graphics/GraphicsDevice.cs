@@ -321,6 +321,15 @@ namespace Microsoft.Xna.Framework.Graphics
                 return _currentRenderTargetBindings != null && _currentRenderTargetBindings.Length > 0;
             }
         }
+        
+        public GraphicsAdapter Adapter
+        {
+            get
+            {
+                // FIXME: Maybe?
+                return GraphicsAdapter.DefaultAdapter;
+            }
+        }
 
         public GraphicsDevice ()
 		{

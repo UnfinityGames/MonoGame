@@ -74,6 +74,24 @@ namespace Microsoft.Xna.Framework.Media
 				return _fileName;
 			}
 		}
+        
+        public float FramesPerSecond
+        {
+            get
+            {
+                // FIXME: Grab this from TheoraPlay.
+                return 30.0f;
+            }
+        }
+        
+        public TimeSpan Duration
+        {
+            get
+            {
+                // FIXME: TheoraPlay can totally give this to us.
+                return TimeSpan.Zero;
+            }
+        }
 		
 		internal static string Normalize(string FileName)
 		{

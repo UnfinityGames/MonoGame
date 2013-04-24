@@ -462,8 +462,7 @@ namespace Microsoft.Xna.Framework.Media
         #endregion
         
         #region Public Methods: XNA VideoPlayer Implementation
-        // FIXME: HACK!!! THIS BREAKS THE API!!!
-        public VideoPlayer(GraphicsDevice device)
+        public VideoPlayer()
         {
             // Set everything to NULL. Yes, this actually matters later.
             theoraDecoder = IntPtr.Zero;
@@ -486,8 +485,8 @@ namespace Microsoft.Xna.Framework.Media
             audioDecoderThread = new Thread(new ThreadStart(this.DecodeAudio));
             frameLocked = false;
             
-            // API BREAKS HERE!!!
-            graphicsDevice = device;
+            // FIXME: Safe?
+            graphicsDevice = Game.Instance.GraphicsDevice;
             
 #if VIDEOPLAYER_OPENGL
             // Initialize the OpenGL bits.
