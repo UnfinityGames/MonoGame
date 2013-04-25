@@ -75,21 +75,30 @@ namespace Microsoft.Xna.Framework.Media
 			}
 		}
         
+        // FIXME: Until we Play(), this might be wrong!
+        private float INTERNAL_fps = 30.0f;
         public float FramesPerSecond
         {
             get
             {
-                // FIXME: Grab this from TheoraPlay.
-                return 30.0f;
+                return INTERNAL_fps;
+            }
+            internal set
+            {
+                INTERNAL_fps = value;
             }
         }
         
+        private TimeSpan INTERNAL_duration = TimeSpan.Zero;
         public TimeSpan Duration
         {
             get
             {
-                // FIXME: TheoraPlay can totally give this to us.
-                return TimeSpan.Zero;
+                return INTERNAL_duration;
+            }
+            internal set
+            {
+                INTERNAL_duration = value;
             }
         }
 		
@@ -108,9 +117,13 @@ namespace Microsoft.Xna.Framework.Media
 			
 			// Concat the file name with valid extensions
 			if (File.Exists(FileName + ".ogv"))
+            {
 				return FileName + ".ogv";
+            }
 			if (File.Exists(FileName + ".ogg"))
+            {
 				return FileName + ".ogg";
+            }
 			
 			return null;
 		}
