@@ -32,68 +32,106 @@ namespace Microsoft.Xna.Framework.Audio
 			uint entryLength = soundReader.ReadUInt16 ();
 			
 			uint numClips = 0;
-			if (complexSound) {
-				numClips = (uint)soundReader.ReadByte ();
-			} else {
-				uint trackIndex = soundReader.ReadUInt16 ();
-				byte waveBankIndex = soundReader.ReadByte ();
-				wave = soundBank.GetWave(waveBankIndex, trackIndex);
-			}
-			
-			if ( (flags & 0x1E) != 0 ) {
-				uint extraDataLen = soundReader.ReadUInt16 ();
-                
-                if ((flags & 0x10) != 0) { // FIXME: Verify this!
+            if (complexSound)
+            {
+                numClips = (uint)soundReader.ReadByte();
+            }
+            else
+            {
+                uint trackIndex = soundReader.ReadUInt16();
+                byte waveBankIndex = soundReader.ReadByte();
+                wave = soundBank.GetWave(waveBankIndex, trackIndex);
+            }
+
+            if ((flags & 0x1E) != 0)
+            {
+                uint extraDataLen = soundReader.ReadUInt16();
+
+                if ((flags & 0x10) != 0)
+                { // FIXME: Verify this!
                     throw new NotImplementedException("XACT DSP Preset tables!");
-                } else if ((flags == 0x02) || (flags == 0x03)) { // FIXME: Verify this!
-                    
+                }
+                else if ((flags == 0x02) || (flags == 0x03))
+                { // FIXME: Verify this!
+
                     // The number of RPC presets that affect this sound.
                     uint numRPCPresets = soundReader.ReadByte();
-                    
+
                     rpcEffects = new byte[numRPCPresets];
-                    
-                    for (uint i = 0; i < numRPCPresets; i++) {
+
+                    for (uint i = 0; i < numRPCPresets; i++)
+                    {
                         byte rpcTable = soundReader.ReadByte();
-                        
+
                         // !!! FIXME: Anyone know how these bytes work? -flibit
-                        
-                        // System.Console.WriteLine(rpcTable);
-                        
+
+                        System.Console.WriteLine("RPC Table Value: " + rpcTable);
+
                         // !!! HACK: Screw it, I need these working. -flibit
-                        
+
                         // Codename lolno has these RPC entries...
                         // All affect Volume, based on the Distance variable.
                         // 1 1 0 0 0 1 1 0 --- 198 - Attenuation
                         // 1 1 1 1 1 0 0 0 --- 248 - Attenuation_high
                         // 0 0 1 0 0 0 0 1 --- 033 - Attenuation_low
-                        
-                        if (rpcTable == 198) {
+
+                        if (rpcTable == 198)
+                        {
                             rpcEffects[i] = 0;
-                        } else if (rpcTable == 248) {
+                        }
+                        else if (rpcTable == 248)
+                        {
                             rpcEffects[i] = 1;
-                        } else if (rpcTable == 033) {
+                        }
+                        else if (rpcTable == 033)
+                        {
                             rpcEffects[i] = 2;
-                        } else {
+                        }
+                        else if (rpcTable == 034)
+                        {
+                            rpcEffects[i] = 3;
+                        }
+                        else if (rpcTable == 001)
+                        {
+                            rpcEffects[i] = 4;
+                        }
+                        else if (rpcTable == 093)
+                        {
+                            rpcEffects[i] = 5;
+                        }
+                        else if (rpcTable == 203)
+                        {
+                            rpcEffects[i] = 6;
+                        }
+                        else
+                        {
                             throw new NotImplementedException("Check the XACT RPC parsing!");
                         }
                     }
-                    
+
                     // Create the variable table
                     for (int i = 0; i < rpcEffects.Length; i++)
                     {
+                        //check if we already contain the value first.  If we do, and we try to add it again, it'll throw an exception.
+                        //if (!rpcVariables.ContainsKey(soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].name)
+                        //&& !rpcVariables.ContainsValue(soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].initValue))
+                        //{
                         rpcVariables.Add(
                             soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].name,
                             soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].initValue
                         );
+                        //}
                     }
-                    
+
                     // Seek to the end of this block.
                     soundReader.BaseStream.Seek(extraDataLen - 3 - numRPCPresets, SeekOrigin.Current);
-                } else {
+                }
+                else
+                {
                     // Screw it, just skip the block.
                     soundReader.BaseStream.Seek(extraDataLen - 2, SeekOrigin.Current);
                 }
-			}
+            }
 			
 			if (complexSound) {
 				soundClips = new XactClip[numClips];
@@ -180,7 +218,7 @@ namespace Microsoft.Xna.Framework.Audio
 		public void Resume() {
 			if (complexSound) {
 				foreach (XactClip clip in soundClips) {
-					clip.Play();
+					clip.Resume();
 				}
 			} else {
 				wave.Resume ();
