@@ -112,15 +112,10 @@ namespace Microsoft.Xna.Framework.Audio
                     // Create the variable table
                     for (int i = 0; i < rpcEffects.Length; i++)
                     {
-                        //check if we already contain the value first.  If we do, and we try to add it again, it'll throw an exception.
-                        //if (!rpcVariables.ContainsKey(soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].name)
-                        //&& !rpcVariables.ContainsValue(soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].initValue))
-                        //{
                         rpcVariables.Add(
                             soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].name,
                             soundBank.audioengine.variables[soundBank.audioengine.rpcCurves[rpcEffects[i]].variable].initValue
                         );
-                        //}
                     }
 
                     // Seek to the end of this block.
