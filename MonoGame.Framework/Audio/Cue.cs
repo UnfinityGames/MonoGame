@@ -68,7 +68,7 @@ namespace Microsoft.Xna.Framework.Audio
         float rpcVolume = 1.0f;
 		
 		//Used to check if the Cue is ready to be played or not.  
-		//Pretty much just checks if it's been loaded, isn't null and isn't already Playing.-Unfinity
+		//Pretty much just checks if it's been loaded, isn't null and isn't already Playing. -Unfinity
 		public bool IsPrepared
         {
             get
