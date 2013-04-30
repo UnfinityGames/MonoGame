@@ -67,6 +67,23 @@ namespace Microsoft.Xna.Framework.Audio
         // FIXME: This should really be an array for each RPC table and type.
         float rpcVolume = 1.0f;
 		
+		//Used to check if the Cue is ready to be played or not.  
+		//Pretty much just checks if it's been loaded, isn't null and isn't already Playing.-Unfinity
+		public bool IsPrepared
+        {
+            get
+            {
+                if (curSound != null && !curSound.Playing)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+		
 		public bool IsPaused
 		{
 			get { return paused; }
@@ -96,7 +113,9 @@ namespace Microsoft.Xna.Framework.Audio
         {
             get
             {
-                // FIXME: What is this, exactly?
+                // FIXME: What is this, exactly? 
+				//I'm assuming it's for multithreading in XNA, under MonoGame I don't think there's ever an instance
+				//where it's between Playing and Stopped. -Unfinity
                 return false;
             }
         }
@@ -298,6 +317,16 @@ namespace Microsoft.Xna.Framework.Audio
                             // FIXME: Multiple volumes?
                             rpcVolume = 1.0f + (curveResult / 10000.0f);
                             curSound.Volume = volume * categoryVolume * rpcVolume;
+                        }
+                        else if (parameter == AudioEngine.RpcParameter.FilterFrequency)
+                        {
+                            //FIXME: Actually implement this effect
+                            Console.WriteLine("Tried to do something with Frequency, but it isn't implemented yet.");
+                        }
+                        else if (parameter == AudioEngine.RpcParameter.Pitch)
+                        {
+                            //FIXME: Actually implement this effect
+                            Console.WriteLine("Tried to do something with Pitch, but it isn't implemented yet.");
                         }
                         else
                         {
