@@ -15,6 +15,7 @@ namespace Microsoft.Xna.Framework.Audio
             public abstract void UpdatePosition(AudioListener listener, AudioEmitter emitter);
 			public abstract void Stop();
 			public abstract void Pause();
+            public abstract void Resume();
 			public abstract bool Playing { get; }
 			public abstract float Volume { get; set; }
 		}
@@ -41,6 +42,14 @@ namespace Microsoft.Xna.Framework.Audio
 			public override void Pause() {
 				wave.Pause ();
 			}
+            
+            public override void Resume()
+            {
+                wave.Volume = clip.Volume;
+                if (wave.State == SoundState.Paused)
+                wave.Resume();
+            }
+
 			public override bool Playing {
 				get {
 					return wave.State == SoundState.Playing;
@@ -92,8 +101,8 @@ namespace Microsoft.Xna.Framework.Audio
                     evnt.wave.IsLooped = true;
                     
 					break;
-                 case 4:
-                    
+
+                case 4:                    
                     // FIXME: Same crap as above, but without the terrible hack? Whaaat -flibit
                     
                     evnt = new EventPlayWave();
@@ -113,7 +122,8 @@ namespace Microsoft.Xna.Framework.Audio
                     events[i] = evnt;
                         
                     break;
-				default:
+
+					default:
 					throw new NotImplementedException("eventInfo & 0x1F = " + eventId);
 				}
 				
@@ -136,6 +146,11 @@ namespace Microsoft.Xna.Framework.Audio
 		public void Pause() {
 			events[0].Pause();
 		}
+
+        public void Resume()
+        {
+            events[0].Resume();
+        }
 		
 		public bool Playing {
 			get {
