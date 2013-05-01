@@ -145,6 +145,16 @@ namespace Microsoft.Xna.Framework.Input
             {
                 osConfigFile += "/MonoGame/MonoGameJoystick.cfg";
             }
+#elif WINDOWS
+            osConfigFile += Directory.GetCurrentDirectory();
+            if (osConfigFile.Length == 0)
+            {
+                osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
+            }
+            else
+            {
+                osConfigFile += "/Config/MonoGameJoystick.cfg";
+            }
 #else
 #warning Apologies, but I need you to implement a joystick config directory for your platform!
             osConfigFile = "MonoGameJoystick.cfg"; // Oh well.
