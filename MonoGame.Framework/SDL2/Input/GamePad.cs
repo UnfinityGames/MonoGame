@@ -150,9 +150,24 @@ namespace Microsoft.Xna.Framework.Input
                     osConfigFile += "/MonoGame/MonoGameJoystick.cfg";
                 }
             }
+            else if (Environment.OSVersion.Platform == PlatformID.Win32NT) //Windows NT or later
+            {
+                //Try to stick this in the Application's directory.
+                osConfigFile += Directory.GetCurrentDirectory();
+
+                //For some reason, we didn't get a directory
+                if (osConfigFile.Length == 0)
+                {
+                    osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
+                }
+                else//we got a directory
+                {
+                    osConfigFile += "/Config/MonoGameJoystick.cfg";
+                }
+            }
             else
             {
-                osConfigFile = "MonoGameJoystick.cfg"; // Oh well.
+                osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
             }
             
             // Check to see if we've already got a config...
