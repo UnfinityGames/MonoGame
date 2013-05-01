@@ -62,9 +62,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
-    <Reference Include="GamepadBridge">
-      <HintPath>..\ThirdParty\GamepadConfig\GamepadBridge.dll</HintPath>
-    </Reference>
     <Reference Include="MonoMac">
       <HintPath>..\ThirdParty\Libs\MonoMac.dll</HintPath>
     </Reference>
@@ -74,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Content\ContentReaders\Texture3DReader.cs" />
     <Compile Include="Graphics\IRenderTarget.cs" />
+    <Compile Include="Graphics\ImageEx.cs" />
     <Compile Include="Graphics\RenderTargetCube.cs" />
     <Compile Include="Graphics\ResourceCreatedEventArgs.cs" />
     <Compile Include="Graphics\ResourceDestroyedEventArgs.cs" />

@@ -48,11 +48,7 @@ using Sce.PlayStation.Core.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 
-#if MONOMAC
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
-using MonoMac.Foundation;
-#elif IOS
+#if IOS
 using MonoTouch.UIKit;
 using MonoTouch.CoreGraphics;
 using MonoTouch.Foundation;
@@ -104,6 +100,13 @@ namespace Microsoft.Xna.Framework.Graphics
 {
     public class Texture2D : Texture
     {
+        protected enum SurfaceType
+        {
+            Texture,
+            RenderTarget,
+            SwapChainRenderTarget,
+        }
+
 		protected int width;
 		protected int height;
 
@@ -124,12 +127,17 @@ namespace Microsoft.Xna.Framework.Graphics
             }
         }
 
+        public Texture2D(GraphicsDevice graphicsDevice, int width, int height)
+            : this(graphicsDevice, width, height, false, SurfaceFormat.Color, SurfaceType.Texture)
+        {
+        }
+
         public Texture2D(GraphicsDevice graphicsDevice, int width, int height, bool mipmap, SurfaceFormat format)
-            : this(graphicsDevice, width, height, mipmap, format, false)
+            : this(graphicsDevice, width, height, mipmap, format, SurfaceType.Texture)
         {
         }
 		
-		internal Texture2D(GraphicsDevice graphicsDevice, int width, int height, bool mipmap, SurfaceFormat format, bool renderTarget)
+		protected Texture2D(GraphicsDevice graphicsDevice, int width, int height, bool mipmap, SurfaceFormat format, SurfaceType type)
 		{
             if (graphicsDevice == null)
                 throw new ArgumentNullException("Graphics Device Cannot Be Null");
@@ -140,8 +148,11 @@ namespace Microsoft.Xna.Framework.Graphics
             this.format = format;
             this.levelCount = mipmap ? CalculateMipLevels(width, height) : 1;
 
-#if DIRECTX
+            // Texture will be assigned by the swap chain.
+		    if (type == SurfaceType.SwapChainRenderTarget)
+		        return;
 
+#if DIRECTX
             // TODO: Move this to SetData() if we want to make Immutable textures!
             var desc = new SharpDX.Direct3D11.Texture2DDescription();
             desc.Width = width;
@@ -156,7 +167,7 @@ namespace Microsoft.Xna.Framework.Graphics
             desc.Usage = SharpDX.Direct3D11.ResourceUsage.Default;
             desc.OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None;
 
-            if (renderTarget)
+            if (type == SurfaceType.RenderTarget)
             {
                 desc.BindFlags |= SharpDX.Direct3D11.BindFlags.RenderTarget;
                 if (mipmap)
@@ -248,12 +259,7 @@ namespace Microsoft.Xna.Framework.Graphics
             this.format = SurfaceFormat.Color; //FIXME HACK
             this.levelCount = 1;
         }
-#endif
-				
-		public Texture2D(GraphicsDevice graphicsDevice, int width, int height)
-            : this(graphicsDevice, width, height, false, SurfaceFormat.Color, false)
-		{			
-		}
+#endif			
 
         public int Width
         {
@@ -676,21 +682,10 @@ namespace Microsoft.Xna.Framework.Graphics
 		public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
 		{
             //todo: partial classes would be cleaner
-#if IOS || MONOMAC
-            
-
-
 #if IOS
 			using (var uiImage = UIImage.LoadFromData(NSData.FromStream(stream)))
-#elif MONOMAC
-			using (var nsImage = NSImage.FromStream (stream))
-#endif
 			{
-#if IOS
 				var cgImage = uiImage.CGImage;
-#elif MONOMAC
-				var cgImage = nsImage.AsCGImage (RectangleF.Empty, null, null);
-#endif
 				
 				var width = cgImage.Width;
 				var height = cgImage.Height;
@@ -785,7 +780,11 @@ namespace Microsoft.Xna.Framework.Graphics
             using (Bitmap image = (Bitmap)Bitmap.FromStream(stream))
             {
                 // Fix up the Image to match the expected format
-                image.RGBToBGR();
+                // Ignore this OSX though, we actually prefer the original endianness.
+                if (Environment.OSVersion.Platform != PlatformID.MacOSX)
+                {
+                    image.RGBToBGR();
+                }
 
                 var data = new byte[image.Width * image.Height * 4];
 
@@ -854,7 +853,7 @@ namespace Microsoft.Xna.Framework.Graphics
             });
 
             waitEvent.Wait();
-#elif MONOMAC
+#elif SDL2
 			SaveAsImage(stream, width, height, ImageFormat.Jpeg);
 #else
             throw new NotImplementedException();
@@ -865,7 +864,7 @@ namespace Microsoft.Xna.Framework.Graphics
         {
 #if WINDOWS_STOREAPP
             SaveAsImage(BitmapEncoder.PngEncoderId, stream, width, height);
-#elif MONOMAC
+#elif SDL2
 			SaveAsImage(stream, width, height, ImageFormat.Png);
 #else
             // TODO: We need to find a simple stand alone
@@ -874,7 +873,7 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
         }
 
-#if MONOMAC
+#if SDL2
 		private void SaveAsImage(Stream stream, int width, int height, ImageFormat format)
 		{
 			if (stream == null)

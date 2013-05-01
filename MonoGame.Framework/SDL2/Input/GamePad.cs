@@ -113,52 +113,47 @@ namespace Microsoft.Xna.Framework.Input
             
             // Get the intended config file path.
             string osConfigFile = "";
-#if MONOMAC
-            osConfigFile += Environment.GetEnvironmentVariable("HOME");
-            if (osConfigFile.Length == 0)
-            {
-                osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
-            }
-            else
-            {
-                osConfigFile += "/Library/Application Support/MonoGame/MonoGameJoystick.cfg";
-            }
-#elif LINUX
-            osConfigFile += Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
-            if (osConfigFile.Length == 0)
+            if (Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
                 osConfigFile += Environment.GetEnvironmentVariable("HOME");
                 if (osConfigFile.Length == 0)
                 {
-                    System.Console.WriteLine("Couldn't find XDG_CONFIG_HOME or HOME.");
-                    System.Console.WriteLine("Fall back to '.'");
                     osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
                 }
                 else
                 {
-                    System.Console.WriteLine("Couldn't find XDG_CONFIG_HOME.");
-                    System.Console.WriteLine("Fall back to hardcoded ~/.config/MonoGame/.");
-                    osConfigFile += "/.config/MonoGame/MonoGameJoystick.cfg";
+                    osConfigFile += "/Library/Application Support/MonoGame/MonoGameJoystick.cfg";
+                }
+            }
+            else if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                // Assuming a non-OSX Unix platform will follow the XDG. Which it should.
+                osConfigFile += Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
+                if (osConfigFile.Length == 0)
+                {
+                    osConfigFile += Environment.GetEnvironmentVariable("HOME");
+                    if (osConfigFile.Length == 0)
+                    {
+                        System.Console.WriteLine("Couldn't find XDG_CONFIG_HOME or HOME.");
+                        System.Console.WriteLine("Fall back to '.'");
+                        osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Couldn't find XDG_CONFIG_HOME.");
+                        System.Console.WriteLine("Fall back to hardcoded ~/.config/MonoGame/.");
+                        osConfigFile += "/.config/MonoGame/MonoGameJoystick.cfg";
+                    }
+                }
+                else
+                {
+                    osConfigFile += "/MonoGame/MonoGameJoystick.cfg";
                 }
             }
             else
             {
-                osConfigFile += "/MonoGame/MonoGameJoystick.cfg";
+                osConfigFile = "MonoGameJoystick.cfg"; // Oh well.
             }
-#elif WINDOWS
-            osConfigFile += Directory.GetCurrentDirectory();
-            if (osConfigFile.Length == 0)
-            {
-                osConfigFile += "MonoGameJoystick.cfg"; // Oh well.
-            }
-            else
-            {
-                osConfigFile += "/Config/MonoGameJoystick.cfg";
-            }
-#else
-#warning Apologies, but I need you to implement a joystick config directory for your platform!
-            osConfigFile = "MonoGameJoystick.cfg"; // Oh well.
-#endif
             
             // Check to see if we've already got a config...
             if (File.Exists(osConfigFile))
@@ -177,36 +172,36 @@ namespace Microsoft.Xna.Framework.Input
             {
                 // First of all, just set our config to default values.
                 
-                // NOTE: These are based on flibit's Wii Classic Controller Pro.
+                // NOTE: These are based on a 360 controller on Linux.
                 
                 // Start
                 joystickConfig.BUTTON_START.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_START.INPUT_ID = 9;
+                joystickConfig.BUTTON_START.INPUT_ID = 7;
                 joystickConfig.BUTTON_START.INPUT_INVERT = false;
                 
                 // Back
                 joystickConfig.BUTTON_BACK.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_BACK.INPUT_ID = 8;
+                joystickConfig.BUTTON_BACK.INPUT_ID = 6;
                 joystickConfig.BUTTON_BACK.INPUT_INVERT = false;
                 
                 // A
                 joystickConfig.BUTTON_A.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_A.INPUT_ID = 1;
+                joystickConfig.BUTTON_A.INPUT_ID = 0;
                 joystickConfig.BUTTON_A.INPUT_INVERT = false;
                 
                 // B
                 joystickConfig.BUTTON_B.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_B.INPUT_ID = 0;
+                joystickConfig.BUTTON_B.INPUT_ID = 1;
                 joystickConfig.BUTTON_B.INPUT_INVERT = false;
                 
                 // X
                 joystickConfig.BUTTON_X.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_X.INPUT_ID = 3;
+                joystickConfig.BUTTON_X.INPUT_ID = 2;
                 joystickConfig.BUTTON_X.INPUT_INVERT = false;
                 
                 // Y
                 joystickConfig.BUTTON_Y.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_Y.INPUT_ID = 2;
+                joystickConfig.BUTTON_Y.INPUT_ID = 3;
                 joystickConfig.BUTTON_Y.INPUT_INVERT = false;
                 
                 // LB
@@ -220,23 +215,23 @@ namespace Microsoft.Xna.Framework.Input
                 joystickConfig.SHOULDER_RB.INPUT_INVERT = false;
                 
                 // LT
-                joystickConfig.TRIGGER_LT.INPUT_TYPE = InputType.Button;
-                joystickConfig.TRIGGER_LT.INPUT_ID = 6;
+                joystickConfig.TRIGGER_LT.INPUT_TYPE = InputType.Axis;
+                joystickConfig.TRIGGER_LT.INPUT_ID = 2;
                 joystickConfig.TRIGGER_LT.INPUT_INVERT = false;
                 
                 // RT
-                joystickConfig.TRIGGER_RT.INPUT_TYPE = InputType.Button;
-                joystickConfig.TRIGGER_RT.INPUT_ID = 7;
+                joystickConfig.TRIGGER_RT.INPUT_TYPE = InputType.Axis;
+                joystickConfig.TRIGGER_RT.INPUT_ID = 5;
                 joystickConfig.TRIGGER_RT.INPUT_INVERT = false;
                 
                 // LStick
                 joystickConfig.BUTTON_LSTICK.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_LSTICK.INPUT_ID = -1;
+                joystickConfig.BUTTON_LSTICK.INPUT_ID = 9;
                 joystickConfig.BUTTON_LSTICK.INPUT_INVERT = false;
                 
                 // RStick
                 joystickConfig.BUTTON_RSTICK.INPUT_TYPE = InputType.Button;
-                joystickConfig.BUTTON_RSTICK.INPUT_ID = -1;
+                joystickConfig.BUTTON_RSTICK.INPUT_ID = 10;
                 joystickConfig.BUTTON_RSTICK.INPUT_INVERT = false;
                 
                 // DPad Up
@@ -267,17 +262,17 @@ namespace Microsoft.Xna.Framework.Input
                 // LY
                 joystickConfig.AXIS_LY.INPUT_TYPE = InputType.Axis;
                 joystickConfig.AXIS_LY.INPUT_ID = 1;
-                joystickConfig.AXIS_LY.INPUT_INVERT = true;
+                joystickConfig.AXIS_LY.INPUT_INVERT = false;
                 
                 // RX
                 joystickConfig.AXIS_RX.INPUT_TYPE = InputType.Axis;
-                joystickConfig.AXIS_RX.INPUT_ID = 2;
+                joystickConfig.AXIS_RX.INPUT_ID = 3;
                 joystickConfig.AXIS_RX.INPUT_INVERT = false;
                 
                 // RY
                 joystickConfig.AXIS_RY.INPUT_TYPE = InputType.Axis;
-                joystickConfig.AXIS_RY.INPUT_ID = 3;
-                joystickConfig.AXIS_RY.INPUT_INVERT = true;
+                joystickConfig.AXIS_RY.INPUT_ID = 4;
+                joystickConfig.AXIS_RY.INPUT_INVERT = false;
                 
                 
                 // Since it doesn't exist, we need to generate the default config.
@@ -307,6 +302,11 @@ namespace Microsoft.Xna.Framework.Input
 			for (int x = 0; x < numSticks; x++)
 			{
                 devices[x] = SDL.SDL_JoystickOpen(x);
+                haptics[x] = SDL.SDL_HapticOpen(x);
+                if (haptics[x] != IntPtr.Zero && SDL.SDL_HapticRumbleSupported(haptics[x]) == 1)
+                {
+                    SDL.SDL_HapticRumbleInit(haptics[x]);
+                }
 				PadConfig pc = new PadConfig(SDL.SDL_JoystickName(devices[x]), x);
     
                 // Start
@@ -459,6 +459,7 @@ namespace Microsoft.Xna.Framework.Input
         
 
         static IntPtr[] devices = new IntPtr[4];
+        static IntPtr[] haptics = new IntPtr[4];
         //Inits SDL and grabs the sticks
         static void Init ()
         {
@@ -478,6 +479,11 @@ namespace Microsoft.Xna.Framework.Input
         		if (pc != null)
                 {
         			devices[i] = SDL.SDL_JoystickOpen (pc.Index);
+                    haptics[i] = SDL.SDL_HapticOpen(pc.Index);
+                    if (haptics[i] != IntPtr.Zero && SDL.SDL_HapticRumbleSupported(haptics[i]) == 1)
+                    {
+                        SDL.SDL_HapticRumbleInit(haptics[i]);
+                    }
 			    }
 		    }
 
@@ -686,7 +692,26 @@ namespace Microsoft.Xna.Framework.Input
         //     motor.
         public static bool SetVibration(PlayerIndex playerIndex, float leftMotor, float rightMotor)
         {
-            return false;
+            if (    haptics[(int) playerIndex] == IntPtr.Zero ||
+                    SDL.SDL_HapticRumbleSupported(haptics[(int) playerIndex]) == 0  )
+            {
+                return false;
+            }
+            
+            if (leftMotor == 0.0f && rightMotor == 0.0f)
+            {
+                SDL.SDL_HapticRumbleStop(haptics[(int) playerIndex]);
+            }
+            else
+            {
+                // FIXME: Left and right motors as separate rumble?
+                SDL.SDL_HapticRumblePlay(
+                    haptics[(int) playerIndex],
+                    (leftMotor + rightMotor) / 2.0f,
+                    uint.MaxValue // Oh my...
+                );
+            }
+            return true;
         }
     }
 }
